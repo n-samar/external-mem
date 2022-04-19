@@ -19,11 +19,16 @@ void AssertSorted(const MmArray<T>& arr) {
 
 int main(int argc, char* argv[]) {
   assert(argc == 3);
-  uint64_t size = 1 << 31;
+  uint64_t element_count = 1 << 30;
+  uint64_t size = element_count * sizeof(int);
   std::string filename = argv[1];
+  std::cout << "Generating data..." << std::endl;
   GenerateData<int>(filename, size);
+  std::cout << "Creating vector..." << std::endl;
   MmArray<int> vec(filename);
+  std::cout << "Sorting..." << std::endl;
   Sort(vec);
+  std::cout << "Checking..." << std::endl;
   AssertSorted(vec);
   bool use_external_memory_algorithms(to_bool(argv[2]));
   (void)use_external_memory_algorithms;
