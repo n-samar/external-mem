@@ -12,11 +12,11 @@ inline int RandomValue<int>() {
 }
 
 template <class T>
-void GenerateData(const std::string& filename, int size) {
+void GenerateData(const std::string& filename, uint64_t size) {
   std::ofstream os(filename, std::ios::binary);
-  for (int i = 0; i < size; ++i) {
+  for (uint64_t i = 0; i < size; ++i) {
     T new_value = RandomValue<T>();
-    os.write(reinterpret_cast<char*>(&new_value), sizeof(int));
+    os.write(reinterpret_cast<char*>(&new_value), sizeof(T));
   }
 }
 

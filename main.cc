@@ -10,14 +10,21 @@ bool to_bool(const std::string& x) {
   return x == "1";
 }
 
+template <class T>
+void AssertSorted(const MmArray<T>& arr) {
+  for (uint64_t idx = 0; idx < arr.size() - 1; ++idx) {
+    assert(arr[idx] <= arr[idx + 1]);
+  }
+}
+
 int main(int argc, char* argv[]) {
   assert(argc == 3);
-  int size = 5;
+  uint64_t size = 1 << 31;
   std::string filename = argv[1];
   GenerateData<int>(filename, size);
-  MmArray<int> vec(filename, size);
-  for (int i = 0; i < size; ++i) {
-    std::cout << vec[i] << std::endl;
-  }
+  MmArray<int> vec(filename);
+  Sort(vec);
+  AssertSorted(vec);
   bool use_external_memory_algorithms(to_bool(argv[2]));
+  (void)use_external_memory_algorithms;
 }
