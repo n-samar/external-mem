@@ -1,0 +1,4 @@
+*.txt
+*.o
+main
+.sconsign.dblite
