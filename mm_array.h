@@ -75,7 +75,6 @@ MmArray<T> MakeAnonymousMmArray(uint64_t size, uint64_t block_size = 1) {
     ofs.seekp(sizeof(T) * size);
     ofs.write("", 1);
     ofs.close();
-    std::cout << filename << std::endl;
     return std::move(MmArray<T>(filename, block_size));
   }
 }

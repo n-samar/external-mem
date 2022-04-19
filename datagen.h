@@ -29,7 +29,9 @@ void GenerateData(const std::string& filename, uint64_t size) {
   for (uint64_t i = 0; i < size; i+=vec_size) {
     std::generate(v.begin(), v.end(), RandomValue<T>);
     os.write(reinterpret_cast<char*>(&v[0]), vec_size);
-    std::cout << i / (1 << 20) << "MB out of " << size / (1 << 30) << "GB" << std::endl;
+    if (i % (1 << 29) == 0) {
+      std::cout << i / (1 << 20) << "MB out of " << size / (1 << 30) << "GB" << std::endl;
+    }
   }
   for (uint64_t i = 0; i < size; ++i) {
     T new_value = RandomValue<T>();
