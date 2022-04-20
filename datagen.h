@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "constants.h"
+
 template <class T>
 T RandomValue() = delete;
 
@@ -22,20 +24,20 @@ inline int RandomValue<int>() {
 }
 
 template <class T>
-void GenerateData(const std::string& filename, uint64_t size) {
+void GenerateData(const std::string& filename, uint64_t element_count) {
   std::ofstream os(filename, std::ios::binary);
-  uint64_t vec_size = (1 << 26) / sizeof(T);
+  uint64_t vec_size = kBlockSize / sizeof(T);
   std::vector<T> v(vec_size);
-  for (uint64_t i = 0; i < size; i+=vec_size) {
+  for (uint64_t i = 0; i < element_count; i+=vec_size) {
     std::generate(v.begin(), v.end(), RandomValue<T>);
     os.write(reinterpret_cast<char*>(&v[0]), vec_size);
     if (i % (1 << 29) == 0) {
-      std::cout << i / (1 << 20) << "MB out of " << size / (1 << 30) << "GB" << std::endl;
+      std::cout << i / (1 << 20) << "MB out of " << element_count * sizeof(T) / (1 << 30) << "GB" << std::endl;
     }
   }
-  for (uint64_t i = 0; i < size; ++i) {
+  for (uint64_t i = 0; i < element_count; ++i) {
     T new_value = RandomValue<T>();
-    os.write(reinterpret_cast<char*>(&new_value), vec_size*sizeof(T));
+    os.write(reinterpret_cast<char*>(&new_value), sizeof(T));
   }
 }
 

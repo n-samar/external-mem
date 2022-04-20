@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <iterator>
 #include <string>
 
 #include "datagen.h"
@@ -12,8 +13,9 @@ bool to_bool(const std::string& x) {
 }
 
 template <class T>
-void AssertSorted(const MmArray<T>& arr) {
-  for (uint64_t idx = 0; idx < arr.size() - 1; ++idx) {
+void AssertSorted(const std::vector<T>& arr) {
+  std::cout << "vector size: " << arr.size() << std::endl;
+  for (uint64_t idx = 0; idx + 1 < arr.size(); ++idx) {
     assert(arr[idx] <= arr[idx + 1]);
   }
 }
@@ -21,17 +23,22 @@ void AssertSorted(const MmArray<T>& arr) {
 int main(int argc, char* argv[]) {
   assert(argc == 4);
   uint64_t element_count = 1ul << std::stoi(argv[1]);
-  uint64_t size = element_count * sizeof(int);
   kMemorySize = 1 << std::stoi(argv[2]);
   kBlockSize = 1 << std::stoi(argv[3]);
-  kThreshold = kMemorySize >> 2;
+  kThreshold = kMemorySize >> 3;
+
   std::string filename = "hello";
+
   std::cout << "Generating data..." << std::endl;
-  GenerateData<int>(filename, size);
+  GenerateData<int>(filename, element_count);
+
   std::cout << "Creating vector..." << std::endl;
-  MmArray<int> vec(filename);
+  std::ifstream fs(filename, std::ios::in | std::ios::binary);
+  std::vector<int> vec(element_count);
+  fs.read(reinterpret_cast<char*>(vec.data()), sizeof(int) * element_count);
+
   std::cout << "Sorting..." << std::endl;
-  Sort(vec);
+  std::sort(vec.begin(), vec.end());
   std::cout << "Checking..." << std::endl;
   AssertSorted(vec);
 }
