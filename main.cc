@@ -5,7 +5,6 @@
 
 #include "datagen.h"
 #include "constants.h"
-#include "mm_array.h"
 
 bool to_bool(const std::string& x) {
   assert(x == "0" || x == "1");
