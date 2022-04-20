@@ -17,7 +17,7 @@ void AssertSorted(const std::vector<T>& arr) {
   }
 }
 
-void SortMainMemory(const std::string& filename, int element_count) {
+void SortMainMemory(const std::string& filename, uint64_t element_count) {
     std::cout << "Creating vector..." << std::endl;
     std::ifstream fs(filename, std::ios::in | std::ios::binary);
     std::vector<int> vec(element_count);
