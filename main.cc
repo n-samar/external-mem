@@ -3,6 +3,7 @@
 #include <string>
 
 #include "datagen.h"
+#include "constants.h"
 #include "mm_array.h"
 
 bool to_bool(const std::string& x) {
@@ -18,10 +19,13 @@ void AssertSorted(const MmArray<T>& arr) {
 }
 
 int main(int argc, char* argv[]) {
-  assert(argc == 3);
-  uint64_t element_count = 1 << 30;
+  assert(argc == 4);
+  uint64_t element_count = 1ul << std::stoi(argv[1]);
   uint64_t size = element_count * sizeof(int);
-  std::string filename = argv[1];
+  kMemorySize = 1 << std::stoi(argv[2]);
+  kBlockSize = 1 << std::stoi(argv[3]);
+  kThreshold = kMemorySize >> 2;
+  std::string filename = "hello";
   std::cout << "Generating data..." << std::endl;
   GenerateData<int>(filename, size);
   std::cout << "Creating vector..." << std::endl;
@@ -30,6 +34,4 @@ int main(int argc, char* argv[]) {
   Sort(vec);
   std::cout << "Checking..." << std::endl;
   AssertSorted(vec);
-  bool use_external_memory_algorithms(to_bool(argv[2]));
-  (void)use_external_memory_algorithms;
 }

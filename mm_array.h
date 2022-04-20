@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-constexpr int kThreshold = 1 << 30;  // 1GB
+#include "constants.h"
 
 namespace bip = boost::interprocess;
 
@@ -19,14 +19,13 @@ class MmArray {
   MmArray<T>(uint64_t size)
       : is_optimized_(true),
         optimization_(size),
-        block_size_(0),
         mapped_rgn_(),
         mapped_data() {
     // nsamar: only allow vector optimization if size is less than kThreshold
     // bytes
     assert(size * sizeof(T) < kThreshold);
   }
-  MmArray<T>(const std::string& filename, uint64_t block_size = 1);
+  MmArray<T>(const std::string& filename);
   MmArray(const MmArray&) = delete;
   MmArray(MmArray&&) = default;
   MmArray& operator=(MmArray&&) = default;
@@ -54,18 +53,16 @@ class MmArray {
     return mapped_data[index];
   }
 
-  uint64_t BlockSize() const { return block_size_; }
 
  private:
   bool is_optimized_;
   std::vector<T> optimization_;
-  uint64_t block_size_;
   bip::mapped_region mapped_rgn_;
   T* mapped_data;
 };
 
 template <class T>
-MmArray<T> MakeAnonymousMmArray(uint64_t size, uint64_t block_size = 1) {
+MmArray<T> MakeAnonymousMmArray(uint64_t size) {
   static std::atomic<uint64_t> tmp_index(0);
   if (size * sizeof(T) < kThreshold) {
     return MmArray<T>(size);
@@ -75,15 +72,14 @@ MmArray<T> MakeAnonymousMmArray(uint64_t size, uint64_t block_size = 1) {
     ofs.seekp(sizeof(T) * size);
     ofs.write("", 1);
     ofs.close();
-    return std::move(MmArray<T>(filename, block_size));
+    return std::move(MmArray<T>(filename));
   }
 }
 
 template <class T>
-MmArray<T>::MmArray(const std::string& filename, uint64_t block_size)
+MmArray<T>::MmArray(const std::string& filename)
     : is_optimized_(false),
       optimization_(),
-      block_size_(block_size),
       mapped_rgn_(bip::mapped_region(
           bip::file_mapping(filename.c_str(), bip::read_write), bip::read_write,
           /*offset=*/0)),
@@ -95,7 +91,7 @@ void Merge(MmArray<T>& array, uint64_t low, uint64_t high, uint64_t mid) {
   assert(mid < high);
   uint64_t low_idx = low;
   uint64_t high_idx = mid;
-  auto merged = MakeAnonymousMmArray<T>(high - low, array.BlockSize());
+  auto merged = MakeAnonymousMmArray<T>(high - low);
   uint64_t curr_idx = 0;
   while (curr_idx < high - low) {
     if (low_idx == mid) {
