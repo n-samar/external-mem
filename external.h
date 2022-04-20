@@ -36,7 +36,7 @@ void AssertSorted(const stxxl::vector<int, 1, stxxl::lru_pager<8>, kBlockSize>& 
   }
 }
 
-void SortExternal(const std::string& filename, int element_count) {
+void SortExternal(const std::string& filename, uint64_t element_count) {
   std::cout << "Creating vector..." << std::endl;
   stxxl::syscall_file f(filename, stxxl::file::DIRECT | stxxl::file::RDWR);
   stxxl::vector<int, 1, stxxl::lru_pager<8>, kBlockSize> v(&f, element_count);
