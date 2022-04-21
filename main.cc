@@ -3,11 +3,23 @@
 #include <iterator>
 #include <string>
 
+#include <stxxl/stack>
+#include <iostream>
+#include <variant>
 
 #include "datagen.h"
 #include "main_memory.h"
 #include "external.h"
 #include "constants.h"
+#include "segment.h"
+
+struct CompareGreater
+{
+  bool operator () (const int& a, const int& b) const
+  { return a > b; }
+  static int max_value()
+  { return std::numeric_limits<int>::min(); }
+};
 
 bool to_bool(const std::string& x) {
   assert(x == "0" || x == "1");
@@ -15,7 +27,7 @@ bool to_bool(const std::string& x) {
 }
 
 int main(int argc, char* argv[]) {
-  assert(argc == 4);
+  assert(argc == 5);
 
   uint64_t element_count = 1ul << std::stoi(argv[1]);
   kMemorySize = 1 << std::stoi(argv[2]);
@@ -23,11 +35,28 @@ int main(int argc, char* argv[]) {
   std::string filename = "hello";
 
   std::cout << "Generating data..." << std::endl;
-  GenerateData<int>(filename, element_count);
+  bool generate_data = to_bool(argv[3]);
+  if (generate_data) {
+    GenerateData<Segment>(filename, element_count);
+  }
 
-  bool use_external_algorithms = to_bool(argv[3]);
+
+  /*
+  typedef stxxl::STACK_GENERATOR<int>::result stack_type;
+
+  stack_type my_stack;
+
+  my_stack.push(8);
+  my_stack.push(7);
+  my_stack.push(4);
+  */
+
+  static_assert(std::is_pod<Segment>::value);
+
+  bool use_external_algorithms = to_bool(argv[4]);
 
   if (use_external_algorithms) {
+    std::cout << "External sort" << std::endl;
     SortExternal(filename, element_count);
   } else {
     SortMainMemory(filename, element_count);

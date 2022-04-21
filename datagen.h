@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "constants.h"
+#include "segment.h"
 
 template <class T>
 T RandomValue() = delete;
@@ -22,6 +23,37 @@ inline int RandomValue<int>() {
     a = a * 0x27d4eb2d;
     a = a ^ (a >> 15);
 	return a;
+}
+
+template <>
+inline Segment RandomValue<Segment>() {
+    if (RandomValue<int>() % 2 == 1) {
+        // Point
+        double x0 = RandomValue<int>() / 10000.0;
+        Segment result;
+        Point lhs;
+        lhs.x = x0;
+        lhs.y = 0;
+        Point rhs;
+        rhs.x = x0;
+        rhs.y = 0;
+        result.lhs = lhs;
+        result.rhs = rhs;
+        return result;
+    } else {
+        // Segment
+        double x0 = RandomValue<int>() / 10000.0;
+        double x1 = RandomValue<int>() / 10000.0;
+        Point lhs, rhs;
+        lhs.x = std::min(x0, x1);
+        lhs.y = 0;
+        rhs.x = std::max(x0, x1);
+        rhs.y = 0;
+        Segment result;
+        result.lhs = lhs;
+        result.rhs = rhs;
+        return result;
+    }
 }
 
 template <class T>

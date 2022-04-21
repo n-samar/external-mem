@@ -9,27 +9,41 @@
 #include <stxxl/io>
 
 #include "constants.h"
+#include "segment.h"
 
 struct Cmp
 {
- typedef int first_argument_type;
- typedef int second_argument_type;
+ typedef Segment first_argument_type;
+ typedef Segment second_argument_type;
  typedef bool result_type;
- bool operator () (const int& a, const int& b) const
+ bool operator () (const Segment& a, const Segment& b) const
  {
- return a < b;
+ return a.lhs.x < b.lhs.x;
  }
- static int min_value()
+
+ static Segment min_value()
  {
-   return std::numeric_limits<int>::min();
+    Segment s;
+    Point p;
+    p.x = std::numeric_limits<double>::min();
+    p.y = std::numeric_limits<double>::min();
+    s.lhs = p;
+    s.rhs = p;
+    return s;
  }
- static int max_value()
+ static Segment max_value()
  {
-  return std::numeric_limits<int>::max();
+  Segment s;
+  Point p;
+  p.x = std::numeric_limits<double>::max();
+  p.y = std::numeric_limits<double>::max();
+  s.lhs = p;
+  s.rhs = p;
+  return s;
  }
 };
 
-void AssertSorted(const stxxl::vector<int, 1, stxxl::lru_pager<8>, kBlockSize>& arr) {
+void AssertSorted(const stxxl::vector<Segment, 1, stxxl::lru_pager<8>, kBlockSize>& arr) {
   std::cout << "vector size: " << arr.size() << std::endl;
   for (uint64_t idx = 0; idx + 1 < arr.size(); ++idx) {
     assert(arr[idx] <= arr[idx + 1]);
@@ -39,11 +53,20 @@ void AssertSorted(const stxxl::vector<int, 1, stxxl::lru_pager<8>, kBlockSize>& 
 void SortExternal(const std::string& filename, uint64_t element_count) {
   std::cout << "Creating vector..." << std::endl;
   stxxl::syscall_file f(filename, stxxl::file::DIRECT | stxxl::file::RDWR);
-  stxxl::vector<int, 1, stxxl::lru_pager<8>, kBlockSize> v(&f, element_count);
+  stxxl::vector<Segment, 1, stxxl::lru_pager<8>, kBlockSize> v(&f, element_count);
 
   std::cout << "Sorting..." << std::endl;
   stxxl::sort(v.begin(), v.end(), Cmp(), kMemorySize);
   AssertSorted(v);
+}
+
+void OneDIntersectionExternal(const std::string& filename, uint64_t element_count) {
+    std::cout << "Creating vector..." << std::endl;
+    stxxl::syscall_file f(filename, stxxl::file::DIRECT | stxxl::file::RDWR);
+    stxxl::vector<Segment, 1, stxxl::lru_pager<8>, kBlockSize> v(&f, element_count);
+
+    std::cout << "Sorting..." << std::endl;
+    stxxl::sort(v.begin(), v.end(), Cmp(), kMemorySize);
 }
 
 #endif  // EXTERNAL_H_
