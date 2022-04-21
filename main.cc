@@ -27,7 +27,7 @@ bool to_bool(const std::string& x) {
 }
 
 int main(int argc, char* argv[]) {
-  assert(argc == 5);
+  assert(argc == 6);
 
   uint64_t element_count = 1ul << std::stoi(argv[1]);
   kMemorySize = 1 << std::stoi(argv[2]);
@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
   std::string filename = "hello";
 
   std::cout << "Generating data..." << std::endl;
-  bool generate_data = to_bool(argv[3]);
+  kSegmentWidth = std::stoi(argv[3]);
+  bool generate_data = to_bool(argv[4]);
   if (generate_data) {
     GenerateData<Segment>(filename, element_count);
   }
@@ -53,7 +54,7 @@ int main(int argc, char* argv[]) {
 
   static_assert(std::is_pod<Segment>::value);
 
-  bool use_external_algorithms = to_bool(argv[4]);
+  bool use_external_algorithms = to_bool(argv[5]);
 
   if (use_external_algorithms) {
     std::cout << "External sort" << std::endl;

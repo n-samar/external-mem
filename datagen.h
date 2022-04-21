@@ -28,7 +28,7 @@ inline int RandomValue<int>() {
 template <>
 inline Segment RandomValue<Segment>() {
     double scale = 1 << 10;
-    double width = 1;
+    double width = kSegmentWidth;
     double scale_down = (1 << 31) / scale;
     if (RandomValue<int>() % 2 == 1) {
         // v-segment
