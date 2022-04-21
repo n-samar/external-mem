@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   std::string filename = "hello";
 
   std::cout << "Generating data..." << std::endl;
-  kSegmentWidth = std::stoi(argv[3]);
+  kSegmentWidth = std::stod(argv[3]);
   bool generate_data = to_bool(argv[4]);
   if (generate_data) {
     GenerateData<Segment>(filename, element_count);
