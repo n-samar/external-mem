@@ -5,8 +5,10 @@
 #include "segment.h"
 
 #include <vector>
+#include <cassert>
 #include <set>
 #include <iostream>
+#include <map>
 #include <algorithm>
 #include <fstream>
 #include <iterator>
@@ -61,6 +63,55 @@ void OneDIntersectionMainMemory(const std::string& filename, uint64_t element_co
           os << "Point(" << *iter << ") " << segment << "\n";
         }
       }
+    }
+}
+
+struct cmpYdecreasing {
+    bool operator()(const Point& p0, const Point& p1) const {
+      return p0.y > p1.y;
+    }
+};
+
+struct cmpXincreasing {
+    bool operator()(const Point& p0, const Point& p1) const {
+      return p0.x < p1.x;
+    }
+};
+
+void TwoDIntersectionMainMemory(const std::string& filename, uint64_t element_count) {
+    std::cout << "Creating vector..." << std::endl;
+    std::ifstream fs(filename, std::ios::in | std::ios::binary);
+    std::ofstream os("result_main_memory.txt", std::ios::trunc);
+    std::vector<Segment> vec(element_count);
+    fs.read(reinterpret_cast<char*>(vec.data()), sizeof(Segment) * element_count);
+
+    std::map<double, Segment> y_map;
+    for (Segment segment : vec) {
+        y_map[segment.lhs.y] = segment;
+        if (segment.lhs.x != segment.rhs.x) {
+          y_map[segment.rhs.y] = segment;
+        }
+    }
+
+    std::map<double, Segment> v_map;
+    for (const auto& [ y_coord, segment ] : y_map) {
+        if (y_coord == segment.lhs.y && y_coord < segment.rhs.y) {
+            // new v-segment
+            v_map[segment.lhs.x] = segment;
+        } else if (y_coord == segment.rhs.y && y_coord > segment.lhs.y) {
+            // old v-segment dies
+            v_map.erase(y_coord);
+        } else if (segment.lhs.y == segment.rhs.y) {
+            // h-segment
+            auto lb = v_map.lower_bound(segment.lhs.x);
+            auto ub = v_map.upper_bound(segment.rhs.x);
+            for (auto iter = lb; iter != ub; ++iter) {
+                // report intersection
+                os  << iter->second << " " << segment << "\n";
+            }
+        } else {
+            assert(false);
+        }
     }
 }
 

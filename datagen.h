@@ -28,27 +28,30 @@ inline int RandomValue<int>() {
 template <>
 inline Segment RandomValue<Segment>() {
     if (RandomValue<int>() % 2 == 1) {
-        // Point
+        // v-segment
         double x0 = RandomValue<int>() / 10000.0;
-        Segment result;
+        double y0 = RandomValue<int>() / 10000.0;
+        double y1 = RandomValue<int>() / 10000.0;
         Point lhs;
         lhs.x = x0;
-        lhs.y = 0;
+        lhs.y = std::min(y0, y1);
         Point rhs;
         rhs.x = x0;
-        rhs.y = 0;
+        rhs.y = std::max(y0, y1);
+        Segment result;
         result.lhs = lhs;
         result.rhs = rhs;
         return result;
     } else {
-        // Segment
+        // h-segment
         double x0 = RandomValue<int>() / 10000.0;
         double x1 = RandomValue<int>() / 10000.0;
+        double y0 = RandomValue<int>() / 10000.0;
         Point lhs, rhs;
         lhs.x = std::min(x0, x1);
-        lhs.y = 0;
+        lhs.y = y0;
         rhs.x = std::max(x0, x1);
-        rhs.y = 0;
+        rhs.y = y0;
         Segment result;
         result.lhs = lhs;
         result.rhs = rhs;

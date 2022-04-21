@@ -30,12 +30,13 @@ bool operator<=(const Segment& s0, const Segment& s1) {
     return s0.lhs.x <= s1.lhs.x;
 }
 
+std::ostream& operator<<(std::ostream& os, const Point& s0) {
+    os << "(" << s0.x << ", " << s0.y << ")";
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const Segment& s0) {
-  if (s0.lhs.x == s0.rhs.x) {
-    os << "Point(" << s0.lhs.x << ")";
-  } else {
-    os << "Segment(" << s0.lhs.x << ", " << s0.rhs.x << ")";
-  }
+  os << "Segment(" << s0.lhs << ", " << s0.rhs << ")";
   return os;
 }
 

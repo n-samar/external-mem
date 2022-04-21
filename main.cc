@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
 
   if (use_external_algorithms) {
     std::cout << "External sort" << std::endl;
-    OneDIntersectionExternal(filename, element_count);
+    TwoDIntersectionExternalBTree(filename, element_count);
   } else {
-    OneDIntersectionMainMemory(filename, element_count);
+    TwoDIntersectionMainMemory(filename, element_count);
   }
 }
