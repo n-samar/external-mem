@@ -22,6 +22,29 @@ struct CompareLessThan
  { return std::numeric_limits<double>::max(); }
 };
 
+struct PairCmp
+{
+ typedef std::pair<double, Segment> first_argument_type;
+ typedef std::pair<double, Segment> second_argument_type;
+ typedef bool result_type;
+ bool operator () (const std::pair<double, Segment>& a, const std::pair<double, Segment>& b) const
+ {
+ return a.first < b.first;
+ }
+
+ static std::pair<double, Segment> min_value()
+ {
+    Segment s;
+    return std::make_pair(std::numeric_limits<double>::min(), s);
+ }
+ static std::pair<double, Segment> max_value()
+ {
+  Segment s;
+  return std::make_pair(std::numeric_limits<double>::max(), s);
+ }
+};
+
+
 struct Cmp
 {
  typedef Segment first_argument_type;
@@ -114,19 +137,45 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     std::vector<Segment> vec(element_count);
     fs.read(reinterpret_cast<char*>(vec.data()), sizeof(Segment) * element_count);
 
+    stxxl::vector<std::pair<double, Segment>, 1, stxxl::lru_pager<8>, kBlockSize> segment_vec(element_count);
+
+    int count = 0;
+    int interval = 10000000;
+    for (Segment in_segment : vec) {
+        if (++count % interval) {
+            std::cout << "FIRST STEP " << int(double(count)/vec.size()*100) << "% through" << std::endl;
+        }
+        segment_vec.push_back(std::make_pair(in_segment.lhs.y, in_segment));
+        if (in_segment.lhs.x == in_segment.rhs.x) {
+          segment_vec.push_back(std::make_pair(in_segment.rhs.y, in_segment));
+        }
+    }
+
+    stxxl::sort(segment_vec.begin(), segment_vec.end(), PairCmp(), kMemorySize);
+
     typedef stxxl::map<double, Segment, CompareLessThan, kBlockSize, kBlockSize> map_type;
-    map_type y_map(10*map_type::node_block_type::raw_size,
-            10*map_type::node_block_type::raw_size);
-    for (Segment segment : vec) {
+    map_type y_map(10000*map_type::node_block_type::raw_size,
+            10000*map_type::node_block_type::raw_size);
+
+    count = 0;
+    for (const auto& [y_coord, segment] : segment_vec) {
+        y_map[y_coord] = segment;
+        if (++count % interval) {
+            std::cout << "SECOND STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
+        }
         y_map[segment.lhs.y] = segment;
         if (segment.lhs.x == segment.rhs.x) {
           y_map[segment.rhs.y] = segment;
         }
     }
 
-    map_type v_map(10*map_type::node_block_type::raw_size,
-            10*map_type::node_block_type::raw_size);
+    map_type v_map(1000*map_type::node_block_type::raw_size,
+            1000*map_type::node_block_type::raw_size);
+    count = 0;
     for (const auto& [ y_coord, segment ] : y_map) {
+        if (++count % interval) {
+            std::cout << "THIRD STEP " << int(double(count)/y_map.size()*100) << "% through" << std::endl;
+        }
         if (y_coord == segment.lhs.y && y_coord < segment.rhs.y) {
             // new v-segment
             v_map[segment.lhs.x] = segment;

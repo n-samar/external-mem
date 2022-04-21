@@ -57,9 +57,10 @@ int main(int argc, char* argv[]) {
   bool use_external_algorithms = to_bool(argv[5]);
 
   if (use_external_algorithms) {
-    std::cout << "External sort" << std::endl;
+    std::cout << "External" << std::endl;
     TwoDIntersectionExternalBTree(filename, element_count);
   } else {
+    std::cout << "Main memory" << std::endl;
     TwoDIntersectionMainMemory(filename, element_count);
   }
 }
