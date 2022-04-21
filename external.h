@@ -119,7 +119,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
             10*map_type::node_block_type::raw_size);
     for (Segment segment : vec) {
         y_map[segment.lhs.y] = segment;
-        if (segment.lhs.x != segment.rhs.x) {
+        if (segment.lhs.x == segment.rhs.x) {
           y_map[segment.rhs.y] = segment;
         }
     }
@@ -132,7 +132,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
             v_map[segment.lhs.x] = segment;
         } else if (y_coord == segment.rhs.y && y_coord > segment.lhs.y) {
             // old v-segment dies
-            v_map.erase(y_coord);
+            v_map.erase(segment.lhs.x);
         } else if (segment.lhs.y == segment.rhs.y) {
             // h-segment
             auto lb = v_map.lower_bound(segment.lhs.x);

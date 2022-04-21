@@ -88,7 +88,7 @@ void TwoDIntersectionMainMemory(const std::string& filename, uint64_t element_co
     std::map<double, Segment> y_map;
     for (Segment segment : vec) {
         y_map[segment.lhs.y] = segment;
-        if (segment.lhs.x != segment.rhs.x) {
+        if (segment.lhs.x == segment.rhs.x) {
           y_map[segment.rhs.y] = segment;
         }
     }
@@ -100,7 +100,7 @@ void TwoDIntersectionMainMemory(const std::string& filename, uint64_t element_co
             v_map[segment.lhs.x] = segment;
         } else if (y_coord == segment.rhs.y && y_coord > segment.lhs.y) {
             // old v-segment dies
-            v_map.erase(y_coord);
+            v_map.erase(segment.lhs.x);
         } else if (segment.lhs.y == segment.rhs.y) {
             // h-segment
             auto lb = v_map.lower_bound(segment.lhs.x);
