@@ -140,9 +140,9 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     stxxl::vector<std::pair<double, Segment>, 1, stxxl::lru_pager<8>, kBlockSize> segment_vec(element_count);
 
     int count = 0;
-    int interval = 10000000;
+    int interval = 100000;
     for (Segment in_segment : vec) {
-        if (++count % interval) {
+        if (++count % interval == 0) {
             std::cout << "FIRST STEP " << int(double(count)/vec.size()*100) << "% through" << std::endl;
         }
         segment_vec.push_back(std::make_pair(in_segment.lhs.y, in_segment));
@@ -160,7 +160,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     count = 0;
     for (const auto& [y_coord, segment] : segment_vec) {
         y_map[y_coord] = segment;
-        if (++count % interval) {
+        if (++count % interval == 0) {
             std::cout << "SECOND STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
         }
         y_map[segment.lhs.y] = segment;
@@ -173,7 +173,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
             1000*map_type::node_block_type::raw_size);
     count = 0;
     for (const auto& [ y_coord, segment ] : y_map) {
-        if (++count % interval) {
+        if (++count % interval == 0) {
             std::cout << "THIRD STEP " << int(double(count)/y_map.size()*100) << "% through" << std::endl;
         }
         if (y_coord == segment.lhs.y && y_coord < segment.rhs.y) {
