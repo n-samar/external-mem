@@ -26,14 +26,26 @@ inline int RandomValue<int>() {
 }
 
 template <>
+inline uint64_t RandomValue<uint64_t>() {
+    static uint64_t i = 0;
+    uint64_t a = ++i;
+    a = (a ^ 61) ^ (a >> 16);
+    a = a + (a << 3);
+    a = a ^ (a >> 4);
+    a = a * 0x27d4eb2d;
+    a = a ^ (a >> 15);
+    return a;
+}
+
+template <>
 inline Segment RandomValue<Segment>() {
     double scale = 1 << 10;
     double width = kSegmentWidth;
-    double scale_down = (1 << 31) / scale;
-    if (RandomValue<int>() % 2 == 1) {
+    double scale_down = (uint64_t(1) << (32+31)) / scale;
+    if (RandomValue<uint64_t>() % 2 == 1) {
         // v-segment
-        double x0 = RandomValue<int>() / scale_down;
-        double y0 = RandomValue<int>() / scale_down;
+        double x0 = RandomValue<uint64_t>() / scale_down;
+        double y0 = RandomValue<uint64_t>() / scale_down;
         double y1 = y0 + width;
         Point lhs;
         lhs.x = x0;
@@ -47,9 +59,9 @@ inline Segment RandomValue<Segment>() {
         return result;
     } else {
         // h-segment
-        double x0 = RandomValue<int>() / scale_down;
+        double x0 = RandomValue<uint64_t>() / scale_down;
         double x1 = x0 + width;
-        double y0 = RandomValue<int>() / scale_down;
+        double y0 = RandomValue<uint64_t>() / scale_down;
         Point lhs, rhs;
         lhs.x = std::min(x0, x1);
         lhs.y = y0;

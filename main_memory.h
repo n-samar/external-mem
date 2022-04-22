@@ -92,8 +92,10 @@ void TwoDIntersectionMainMemory(const std::string& filename, uint64_t element_co
         if (++count % interval == 0) {
             std::cout << "FIRST STEP " << int(double(count)/vec.size()*100) << "% through" << std::endl;
         }
+        assert(!y_map.count(segment.lhs.y));
         y_map[segment.lhs.y] = segment;
         if (segment.lhs.x == segment.rhs.x) {
+          assert(!y_map.count(segment.rhs.y));
           y_map[segment.rhs.y] = segment;
         }
     }
