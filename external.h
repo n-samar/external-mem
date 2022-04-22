@@ -160,7 +160,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     count = 0;
     for (const auto& [ y_coord, segment ] : segment_vec) {
         if (++count % interval == 0) {
-            std::cout << "THIRD STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
+            std::cout << "SECOND STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
         }
         if (y_coord == segment.lhs.y && y_coord < segment.rhs.y) {
             // new v-segment
