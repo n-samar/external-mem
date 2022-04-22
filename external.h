@@ -137,7 +137,8 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     std::vector<Segment> vec(element_count);
     fs.read(reinterpret_cast<char*>(vec.data()), sizeof(Segment) * element_count);
 
-    stxxl::vector<std::pair<double, Segment>, 1, stxxl::lru_pager<8>, kBlockSize> segment_vec(element_count);
+    stxxl::vector<std::pair<double, Segment>, 1, stxxl::lru_pager<8>, kBlockSize> segment_vec;
+    segment_vec.reserve(element_count);
 
     int count = 0;
     int interval = 100000;
