@@ -154,27 +154,13 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
     stxxl::sort(segment_vec.begin(), segment_vec.end(), PairCmp(), kMemorySize);
 
     typedef stxxl::map<double, Segment, CompareLessThan, kBlockSize, kBlockSize> map_type;
-    map_type y_map(10000*map_type::node_block_type::raw_size,
-            10000*map_type::node_block_type::raw_size);
-
-    count = 0;
-    for (const auto& [y_coord, segment] : segment_vec) {
-        y_map[y_coord] = segment;
-        if (++count % interval == 0) {
-            std::cout << "SECOND STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
-        }
-        y_map[segment.lhs.y] = segment;
-        if (segment.lhs.x == segment.rhs.x) {
-          y_map[segment.rhs.y] = segment;
-        }
-    }
 
     map_type v_map(1000*map_type::node_block_type::raw_size,
             1000*map_type::node_block_type::raw_size);
     count = 0;
-    for (const auto& [ y_coord, segment ] : y_map) {
+    for (const auto& [ y_coord, segment ] : segment_vec) {
         if (++count % interval == 0) {
-            std::cout << "THIRD STEP " << int(double(count)/y_map.size()*100) << "% through" << std::endl;
+            std::cout << "THIRD STEP " << int(double(count)/segment_vec.size()*100) << "% through" << std::endl;
         }
         if (y_coord == segment.lhs.y && y_coord < segment.rhs.y) {
             // new v-segment
