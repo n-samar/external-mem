@@ -95,7 +95,12 @@ void TwoDIntersectionMainMemory(const std::string& filename, uint64_t element_co
         assert(!y_map.count(segment.lhs.y));
         y_map[segment.lhs.y] = segment;
         if (segment.lhs.x == segment.rhs.x) {
-          assert(!y_map.count(segment.rhs.y));
+          if(y_map.count(segment.rhs.y)) {
+	    std::cout << "step: " << count << std::endl;
+	    std::cout << "count: " << y_map.count(segment.rhs.y) << std::endl;
+	    std::cout << "segment: " << segment << std::endl;
+	    assert(false);
+	  }
           y_map[segment.rhs.y] = segment;
         }
     }

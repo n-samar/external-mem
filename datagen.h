@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <cassert>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -29,11 +30,11 @@ template <>
 inline uint64_t RandomValue<uint64_t>() {
     static uint64_t i = 0;
     uint64_t a = ++i;
-    a = (a ^ 61) ^ (a >> 16);
-    a = a + (a << 3);
-    a = a ^ (a >> 4);
-    a = a * 0x27d4eb2d;
-    a = a ^ (a >> 15);
+    a ^= (a >> 33);
+    a *= 0xff51afd7ed558ccdL;
+    a ^= (a >> 33);
+    a *= 0xc4ceb9fe1a85ec53L;
+    a ^= (a >> 33);
     return a;
 }
 
@@ -42,6 +43,7 @@ inline Segment RandomValue<Segment>() {
     double scale = 1 << 10;
     double width = kSegmentWidth;
     double scale_down = (uint64_t(1) << (32+31)) / scale;
+    Segment result;
     if (RandomValue<uint64_t>() % 2 == 1) {
         // v-segment
         double x0 = RandomValue<uint64_t>() / scale_down;
@@ -53,10 +55,8 @@ inline Segment RandomValue<Segment>() {
         Point rhs;
         rhs.x = x0;
         rhs.y = std::max(y0, y1);
-        Segment result;
         result.lhs = lhs;
         result.rhs = rhs;
-        return result;
     } else {
         // h-segment
         double x0 = RandomValue<uint64_t>() / scale_down;
@@ -67,11 +67,14 @@ inline Segment RandomValue<Segment>() {
         lhs.y = y0;
         rhs.x = std::max(x0, x1);
         rhs.y = y0;
-        Segment result;
         result.lhs = lhs;
         result.rhs = rhs;
-        return result;
     }
+    if (!((result.lhs.x == result.rhs.x) ^ (result.lhs.y == result.rhs.y))) {
+	std::cout << result << std::endl;
+	assert(false);
+    }
+    return result;
 }
 
 template <class T>
