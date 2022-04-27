@@ -154,7 +154,7 @@ void TwoDIntersectionExternalBTree(const std::string& filename, uint64_t element
 
     stxxl::sort(segment_vec.begin(), segment_vec.end(), PairCmp(), kMemorySize);
 
-    typedef stxxl::map<double, Segment, CompareLessThan, kBlockSize, kBlockSize> map_type;
+    typedef stxxl::map<double, Segment, CompareLessThan, 1<<12, 1<<12> map_type;
 
     map_type v_map(1000*map_type::node_block_type::raw_size,
             1000*map_type::node_block_type::raw_size);
