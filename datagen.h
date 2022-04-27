@@ -40,11 +40,12 @@ inline uint64_t RandomValue<uint64_t>() {
 
 template <>
 inline Segment RandomValue<Segment>() {
+    assert(kVerticalRatio > 0 && kVerticalRatio < 1);
     double scale = 1 << 10;
     double width = kSegmentWidth;
     double scale_down = (uint64_t(1) << (32+31)) / scale;
     Segment result;
-    if (RandomValue<uint64_t>() % 2 == 1) {
+    if (RandomValue<uint64_t>() < kVerticalRatio * std::numeric_limits<uint64_t>::max()) {
         // v-segment
         double x0 = RandomValue<uint64_t>() / scale_down;
         double y0 = RandomValue<uint64_t>() / scale_down;

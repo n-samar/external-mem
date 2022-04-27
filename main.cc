@@ -27,7 +27,7 @@ bool to_bool(const std::string& x) {
 }
 
 int main(int argc, char* argv[]) {
-  assert(argc == 6);
+  assert(argc == 7);
 
   uint64_t element_count = 1ul << std::stoi(argv[1]);
   kMemorySize = 1 << std::stoi(argv[2]);
@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
   std::cout << "Generating data..." << std::endl;
   kSegmentWidth = std::stod(argv[3]);
   bool generate_data = to_bool(argv[4]);
+  kVerticalRatio = std::stod(argv[6]);
   if (generate_data) {
     GenerateData<Segment>(filename, element_count);
   }
